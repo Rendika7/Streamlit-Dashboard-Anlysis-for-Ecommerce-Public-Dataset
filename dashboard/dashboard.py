@@ -116,7 +116,7 @@ with st.sidebar:
 # ======================================== Sidebar Configuration ========================================
 
 # Menampilkan banner gambar sebagai hero image  ========================================
-st.image('dashboard\image\Dashboard Analysis for E-Commerce Public Dataset.png', use_container_width=True)
+st.image('dashboard/image/Dashboard Analysis for E-Commerce Public Dataset.png', use_container_width=True)
 
 # Membuat DataFrame untuk menampilkan tabel
 data_diri = pd.DataFrame({
