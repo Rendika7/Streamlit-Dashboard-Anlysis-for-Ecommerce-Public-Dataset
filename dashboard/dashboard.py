@@ -53,6 +53,36 @@ else:
     st.toast("Ayo jelajahi dashboard ini!", icon="🚀")
 
 
+
+# ======================================== Load Data !!! ======================================== #
+
+# Folder path
+dataPath = "dashboard/main_data.csv"
+
+@st.cache_data
+def load_data():
+    # Load data
+    df = pd.read_csv(dataPath) # csv
+    # Pastikan kolom 'order_approved_at' benar-benar dalam format datetime
+    df['order_approved_at'] = pd.to_datetime(df['order_approved_at'], errors='coerce')  # 'coerce' akan menghasilkan NaT untuk yang tidak bisa dikonversi
+    return df
+
+# Will only run once if already cached  ========================================
+df = load_data()
+
+@st.cache_data
+def create_rfm(df):
+    df_rfm = df.copy()
+    # Proses lainnya pada df_rfm jika ada
+    return df_rfm
+
+# Kemudian panggil fungsi create_rfm untuk memastikan caching
+df_rfm = create_rfm(df)
+
+# ======================================== Load Data !!! ======================================== #
+
+
+
 # ======================================== Sidebar Configuration ========================================
 
 with st.sidebar:
@@ -93,6 +123,66 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
+    # ======================================== Sidebar filter ======================================== #
+
+    # Sidebar filter
+    st.markdown("""
+    <div style="text-align: center;">
+        🛠️ <strong>Filter Data</strong> 🛠️
+        <hr style="border: 1px solid #ddd; width: 50%; margin: 10px auto;">
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Filter berdasarkan status pesanan dengan st.pills (multi-selections)
+    order_status_filter = st.sidebar.pills(
+        "📄 Pilih Status Pesanan", df["order_status"].unique(), selection_mode="multi"
+    )
+
+    # Filter berdasarkan kota pelanggan
+    city_filter = st.sidebar.multiselect(
+        "🏙️ Pilih Kota Pelanggan", df["customer_city"].unique(), default=[]
+    )
+
+    # Filter berdasarkan tipe pembayaran
+    payment_type_filter = st.sidebar.multiselect(
+        "💰 Pilih Tipe Pembayaran", df["payment_type"].unique(), default=[]
+    )
+
+    # Filter berdasarkan tanggal
+    start_date = st.sidebar.date_input(
+        "📅 Tanggal Mulai", pd.to_datetime(df["order_approved_at"].min()).date()
+    )
+    end_date = st.sidebar.date_input(
+        "📅 Tanggal Selesai", pd.to_datetime(df["order_approved_at"].max()).date()
+    )
+
+    # Menambahkan pesan peringatan
+    st.sidebar.info(
+        """
+        **ℹ️ Peringatan:**
+        Semua tulisan insight atau interpretasi pada dashboard berlaku/sesuai ketika Anda tidak menerapkan filter apapun pada data.
+        """
+    )
+
+    # Filter: Menyaring data berdasarkan input
+    if order_status_filter:
+        df = df[df["order_status"].isin(order_status_filter)]
+
+    if city_filter:
+        df = df[df["customer_city"].isin(city_filter)]
+
+    if payment_type_filter:
+        df = df[df["payment_type"].isin(payment_type_filter)]
+
+    if start_date and end_date:
+        df = df[
+            (df["order_approved_at"].dt.date >= start_date) &
+            (df["order_approved_at"].dt.date <= end_date)
+        ]
+
+    # ======================================== Sidebar filter ======================================== #
+
+
     # Menampilkan tombol switch untuk menghidupkan/mematikan musik latar belakang ========================================
     play_music = st.toggle("🎵 Background Music")
 
@@ -126,20 +216,6 @@ data_diri = pd.DataFrame({
 })
 # Menampilkan tabel  ========================================
 st.table(data_diri)
-
-# -------------------------------------- Load Data !!! -------------------------------------- #
-
-# Folder path
-dataPath = "dashboard/main_data.csv"
-
-@st.cache_data
-def load_data():
-    # Load data
-    df = pd.read_csv(dataPath) # csv
-    return df
-
-# Will only run once if already cached  ========================================
-df = load_data()
 
 # -------------------------------------- Start Dashboard Here !!! -------------------------------------- #
 
@@ -276,8 +352,8 @@ with tab1:
         )
         st.plotly_chart(fig_heatmap)
 
-# -------------------------------------- Tab 2: Pandas Profiling -------------------------------------- #
-with tab2:
+with tab2: # -------------------------------------- Tab 2: Pandas Profiling -------------------------------------- #
+
     # Menampilkan judul halaman
     st.markdown('<h2 style="text-align: center; font-size: 40px; font-weight: bold; background-color: #E36A64; color: white; padding: 20px; border-radius: 8px;">📝 PANDAS PROFILING REPORT</h2>', unsafe_allow_html=True)
 
@@ -306,8 +382,7 @@ with tab2:
 
 
             
-# -------------------------------------- Tab 3: Explanatory Insights -------------------------------------- #
-with tab3:
+with tab3: # -------------------------------------- Tab 3: Explanatory Insights -------------------------------------- #
     
         # Extra Styling for the page
     st.markdown("""
@@ -559,40 +634,36 @@ with tab3:
         """, unsafe_allow_html=True)
 
 
-# -------------------------------------- Tab 4: RFM Analysis -------------------------------------- #
-with tab4:
-            # Menampilkan judul dengan CSS custom
-    st.markdown('<div class="section-title">📊 RFM Analysis</div>', unsafe_allow_html=True)
+
+with tab4: # -------------------------------------- Tab 4: RFM Analysis -------------------------------------- #
+    # Menampilkan judul dengan CSS custom
+    st.markdown('<div class="section-title">📊 RFM Analysis</div><br>', unsafe_allow_html=True)
 
     # Menambahkan deskripsi halaman
-    st.markdown("""
-        <div class="description">
-            Bagian ini akan berisi analisis RFM untuk segmentasi pelanggan berdasarkan Recency, Frequency, dan Monetary.
-        </div>
-    """, unsafe_allow_html=True)
-
+    st.info("ℹ️: Filter tidak berlaku pada halaman ini. Analisis dilakukan berdasarkan seluruh data yang ada. Bagian ini akan berisi analisis RFM untuk segmentasi pelanggan berdasarkan Recency, Frequency, dan Monetary.")
+    
 
     # Pastikan order_purchase_timestamp dikonversi ke datetime
-    df['order_purchase_timestamp'] = pd.to_datetime(df['order_purchase_timestamp'])
+    df_rfm['order_purchase_timestamp'] = pd.to_datetime(df_rfm['order_purchase_timestamp'])
 
     # Hitung Recency, Frequency, dan Monetary
-    current_date = df['order_purchase_timestamp'].max()  # Tanggal transaksi terakhir dalam dataset
+    current_date = df_rfm['order_purchase_timestamp'].max()  # Tanggal transaksi terakhir dalam dataset
 
     # 1. Recency - selisih hari antara transaksi terakhir dan transaksi masing-masing pelanggan
-    df['recency'] = (current_date - df['order_purchase_timestamp']).dt.days
+    df_rfm['recency'] = (current_date - df_rfm['order_purchase_timestamp']).dt.days
 
     # 2. Frequency - jumlah transaksi per customer_id
-    frequency = df.groupby('customer_id')['order_id'].count().reset_index()
+    frequency = df_rfm.groupby('customer_id')['order_id'].count().reset_index()
     frequency.columns = ['customer_id', 'frequency']
 
     # 3. Monetary - total pengeluaran per customer_id
-    df['total_spent'] = df['price'] + df['freight_value']
-    monetary = df.groupby('customer_id')['total_spent'].sum().reset_index()
+    df_rfm['total_spent'] = df_rfm['price'] + df_rfm['freight_value']
+    monetary = df_rfm.groupby('customer_id')['total_spent'].sum().reset_index()
     monetary.columns = ['customer_id', 'monetary']
 
     # Gabungkan semua hasilnya ke dalam satu dataframe
     rfm = frequency.merge(monetary, on='customer_id')
-    rfm = rfm.merge(df[['customer_id', 'recency']].drop_duplicates(), on='customer_id')
+    rfm = rfm.merge(df_rfm[['customer_id', 'recency']].drop_duplicates(), on='customer_id')
 
     # Membuat dua kolom
     col1, col2 = st.columns(2)
@@ -601,8 +672,8 @@ with tab4:
     top_10_frequency = rfm.nlargest(10, 'frequency')
 
     fig1 = px.bar(top_10_frequency, x='customer_id', y='frequency', 
-                labels={'customer_id': 'Customer ID', 'frequency': 'Frequency'},
-                title='Top 10 Frequency Transaksi')
+                  labels={'customer_id': 'Customer ID', 'frequency': 'Frequency'},
+                  title='Top 10 Frequency Transaksi')
 
     col1.plotly_chart(fig1, use_container_width=True)
 
@@ -612,17 +683,17 @@ with tab4:
 
     # Top 5 Monetary
     fig2 = px.bar(top_10_monetary, x='monetary', y='customer_id', 
-                orientation='h', 
-                labels={'monetary': 'Monetary (IDR)', 'customer_id': 'Customer ID'},
-                title='Top 5 Monetary Pengeluaran')
+                  orientation='h', 
+                  labels={'monetary': 'Monetary (IDR)', 'customer_id': 'Customer ID'},
+                  title='Top 5 Monetary Pengeluaran')
 
     col2.plotly_chart(fig2, use_container_width=True)
 
     # Bottom 5 Monetary
     fig3 = px.bar(bottom_10_monetary, x='monetary', y='customer_id', 
-                orientation='h', 
-                labels={'monetary': 'Monetary (IDR)', 'customer_id': 'Customer ID'},
-                title='Bottom 5 Monetary Pengeluaran')
+                  orientation='h', 
+                  labels={'monetary': 'Monetary (IDR)', 'customer_id': 'Customer ID'},
+                  title='Bottom 5 Monetary Pengeluaran')
 
     col2.plotly_chart(fig3, use_container_width=True)
 
@@ -654,11 +725,11 @@ with tab4:
     - Berikan edukasi mengenai produk dengan **konten interaktif, demo, atau review pengguna** untuk meningkatkan kepercayaan mereka dalam melakukan transaksi lebih besar.
     """)
     
-    
-with tab5:
+
+with tab5:  # -------------------------------------- Tab 5: Manual Clustering Analysis -------------------------------------- #
     # Menghitung percentile untuk total_spent dan recency
-    percentiles_total_spent = df['total_spent'].quantile([0.25, 0.50, 0.75])
-    percentiles_recency = df['recency'].quantile([0.25, 0.50, 0.75])
+    percentiles_total_spent = df_rfm['total_spent'].quantile([0.25, 0.50, 0.75])
+    percentiles_recency = df_rfm['recency'].quantile([0.25, 0.50, 0.75])
 
     # Mendapatkan nilai percentiles untuk total_spent dan recency
     Q1_total_spent = percentiles_total_spent[0.25]
@@ -697,9 +768,9 @@ with tab5:
             return 'Tidak Puas'
 
     # Terapkan fungsi binning ke dalam kolom baru
-    df['total_spent_percentile_group'] = df.apply(total_spent_percentile_grouping, axis=1)
-    df['recency_percentile_group'] = df.apply(recency_percentile_grouping, axis=1)
-    df['review_score_group'] = df.apply(review_score_grouping, axis=1)
+    df_rfm['total_spent_percentile_group'] = df_rfm.apply(total_spent_percentile_grouping, axis=1)
+    df_rfm['recency_percentile_group'] = df_rfm.apply(recency_percentile_grouping, axis=1)
+    df_rfm['review_score_group'] = df_rfm.apply(review_score_grouping, axis=1)
 
     # Fungsi untuk menampilkan label di setiap bar
     def plot_bar_with_labels(ax, data, title, xlabel, ylabel, rotate_labels=False):
@@ -714,60 +785,63 @@ with tab5:
                         ha='center', va='center', 
                         fontsize=12, color='black', fontweight='bold', 
                         xytext=(0, 9), textcoords='offset points')
-            
-                # Memutar label di sumbu x
+
+        # Memutar label di sumbu x
         if rotate_labels:
             ax.set_xticklabels(ax.get_xticklabels(), rotation=20, ha='center')
 
     # Menyiapkan data untuk value_counts
-    total_spent_groups = df['total_spent_percentile_group'].value_counts()
-    recency_groups = df['recency_percentile_group'].value_counts()
-    review_score_groups = df['review_score_group'].value_counts()
+    total_spent_groups = df_rfm['total_spent_percentile_group'].value_counts()
+    recency_groups = df_rfm['recency_percentile_group'].value_counts()
+    review_score_groups = df_rfm['review_score_group'].value_counts()
 
-    # Streamlit Layout
-    st.title('Clustering - With Manual Grouping/Binning')
+    # Menampilkan judul dengan CSS custom
+    st.markdown('<div class="section-title">🔍 Clustering - With Manual Grouping/Binning</div> <br>', unsafe_allow_html=True)
 
+    st.info("ℹ️: Filter tidak berlaku pada halaman ini. Analisis dilakukan berdasarkan seluruh data yang ada. Bagian ini akan berisi analisis mengenai hasil clustering yang dibuat dengan manual grouping/binning.")
+
+    
     # Membuat subplot dengan 3 bar chart (1x3)
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 
     # Plot untuk 'total_spent_percentile_group'
-    plot_bar_with_labels(axes[0], df['total_spent_percentile_group'], 
-                        'Distribusi Pengeluaran', 'Pengeluaran', 'Jumlah Pelanggan', rotate_labels=True)
+    plot_bar_with_labels(axes[0], df_rfm['total_spent_percentile_group'], 
+                         'Distribusi Pengeluaran', 'Pengeluaran', 'Jumlah Pelanggan', rotate_labels=True)
 
-    plot_bar_with_labels(axes[1], df['recency_percentile_group'], 
-                            'Distribusi Recency', 'Recency (Hari)', 'Jumlah Pelanggan')
-    
+    plot_bar_with_labels(axes[1], df_rfm['recency_percentile_group'], 
+                         'Distribusi Recency', 'Recency (Hari)', 'Jumlah Pelanggan')
+
     # Plot untuk 'review_score_group'
-    plot_bar_with_labels(axes[2], df['review_score_group'], 
-                        'Distribusi Skor Ulasan', 'Skor Ulasan', 'Jumlah Pelanggan')
+    plot_bar_with_labels(axes[2], df_rfm['review_score_group'], 
+                         'Distribusi Skor Ulasan', 'Skor Ulasan', 'Jumlah Pelanggan')
 
     # Layout Adjustments
     plt.tight_layout()
     st.pyplot(fig)
-    
+
     # Plot untuk 'recency_percentile_group'
     col1, col2, col3 = st.columns([1, 1, 1])  # Membagi kolom menjadi 3
-    
+
     with col1:
         st.markdown("""
         **Distribusi Pengeluaran**:
-    
+
         Mayoritas pelanggan berada dalam kategori pengeluaran menengah (56.600 pelanggan), menunjukkan bahwa sebagian besar pelanggan tidak berbelanja dalam jumlah kecil atau sangat besar.  
         Segmen pelanggan dengan pengeluaran rendah (28.300 pelanggan) dan tinggi (28.293 pelanggan) relatif seimbang, yang menunjukkan adanya dua kelompok pelanggan yang mungkin membutuhkan pendekatan strategi yang berbeda.
         """)
-    
+
     with col2:
         st.markdown("""
         **Distribusi Recency (Kapan Terakhir Bertransaksi)**:
-    
+
         Pelanggan rutin (56.586 pelanggan) mendominasi, yang menunjukkan bahwa mayoritas pelanggan masih aktif melakukan transaksi dalam periode waktu yang relatif dekat.  
         Namun, terdapat sekitar 28.065 pelanggan yang tergolong tidak aktif, yang berpotensi mengalami churn dan perlu ditargetkan untuk re-engagement.
         """)
-    
+
     with col3:
         st.markdown("""
         **Distribusi Skor Ulasan**:
-    
+
         Mayoritas pelanggan (65.145 pelanggan) memberikan rating "puas" (5 bintang), menunjukkan bahwa layanan atau produk secara keseluruhan mendapatkan ulasan positif.  
         Namun, 16.704 pelanggan merasa tidak puas, yang merupakan jumlah signifikan dan perlu dianalisis lebih lanjut untuk mengetahui penyebab utama ketidakpuasan mereka.
         """)
