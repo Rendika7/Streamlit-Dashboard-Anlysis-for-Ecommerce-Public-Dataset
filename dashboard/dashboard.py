@@ -98,7 +98,7 @@ with st.sidebar:
 
     # Jika switch diaktifkan, jalankan musik dari file lokal dengan HTML (autoplay & loop)
     if play_music:
-        music_file = "audio/Background-lofi-by-pixabay.mp3"  # Ganti dengan file lokal kamu
+        music_file = "dashboard/audio/Background-lofi-by-pixabay.mp3"  # Ganti dengan file lokal kamu
 
         # Konversi file audio ke base64
         with open(music_file, "rb") as audio_file:
@@ -116,7 +116,7 @@ with st.sidebar:
 # ======================================== Sidebar Configuration ========================================
 
 # Menampilkan banner gambar sebagai hero image  ========================================
-st.image('image\Dashboard Analysis for E-Commerce Public Dataset.png', use_container_width=True)
+st.image('dashboard\image\Dashboard Analysis for E-Commerce Public Dataset.png', use_container_width=True)
 
 # Membuat DataFrame untuk menampilkan tabel
 data_diri = pd.DataFrame({
