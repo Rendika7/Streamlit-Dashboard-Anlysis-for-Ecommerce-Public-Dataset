@@ -16,7 +16,7 @@ import base64
 
 
 # Loading Image using PIL
-web_icon = Image.open('image/Gojo Chibi.jpg') # Adding Image to web app
+web_icon = Image.open('dashboard/image/Gojo Chibi.jpg') # Adding Image to web app
 st.set_page_config(page_title="Air Quality Dashboard", layout="wide", initial_sidebar_state="auto", page_icon = web_icon)
 
 # hide_default_format = """
