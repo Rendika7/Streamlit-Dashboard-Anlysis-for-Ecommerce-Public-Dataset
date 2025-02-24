@@ -745,29 +745,29 @@ with tab5:
     plt.tight_layout()
     st.pyplot(fig)
     
-# Plot untuk 'recency_percentile_group'
-col1, col2, col3 = st.columns([1, 1, 1])  # Membagi kolom menjadi 3
-
-with col1:
-    st.markdown("""
-    **Distribusi Pengeluaran**:
-
-    Mayoritas pelanggan berada dalam kategori pengeluaran menengah (56.600 pelanggan), menunjukkan bahwa sebagian besar pelanggan tidak berbelanja dalam jumlah kecil atau sangat besar.  
-    Segmen pelanggan dengan pengeluaran rendah (28.300 pelanggan) dan tinggi (28.293 pelanggan) relatif seimbang, yang menunjukkan adanya dua kelompok pelanggan yang mungkin membutuhkan pendekatan strategi yang berbeda.
-    """)
-
-with col2:
-    st.markdown("""
-    **Distribusi Recency (Kapan Terakhir Bertransaksi)**:
-
-    Pelanggan rutin (56.586 pelanggan) mendominasi, yang menunjukkan bahwa mayoritas pelanggan masih aktif melakukan transaksi dalam periode waktu yang relatif dekat.  
-    Namun, terdapat sekitar 28.065 pelanggan yang tergolong tidak aktif, yang berpotensi mengalami churn dan perlu ditargetkan untuk re-engagement.
-    """)
-
-with col3:
-    st.markdown("""
-    **Distribusi Skor Ulasan**:
-
-    Mayoritas pelanggan (65.145 pelanggan) memberikan rating "puas" (5 bintang), menunjukkan bahwa layanan atau produk secara keseluruhan mendapatkan ulasan positif.  
-    Namun, 16.704 pelanggan merasa tidak puas, yang merupakan jumlah signifikan dan perlu dianalisis lebih lanjut untuk mengetahui penyebab utama ketidakpuasan mereka.
-    """)
+    # Plot untuk 'recency_percentile_group'
+    col1, col2, col3 = st.columns([1, 1, 1])  # Membagi kolom menjadi 3
+    
+    with col1:
+        st.markdown("""
+        **Distribusi Pengeluaran**:
+    
+        Mayoritas pelanggan berada dalam kategori pengeluaran menengah (56.600 pelanggan), menunjukkan bahwa sebagian besar pelanggan tidak berbelanja dalam jumlah kecil atau sangat besar.  
+        Segmen pelanggan dengan pengeluaran rendah (28.300 pelanggan) dan tinggi (28.293 pelanggan) relatif seimbang, yang menunjukkan adanya dua kelompok pelanggan yang mungkin membutuhkan pendekatan strategi yang berbeda.
+        """)
+    
+    with col2:
+        st.markdown("""
+        **Distribusi Recency (Kapan Terakhir Bertransaksi)**:
+    
+        Pelanggan rutin (56.586 pelanggan) mendominasi, yang menunjukkan bahwa mayoritas pelanggan masih aktif melakukan transaksi dalam periode waktu yang relatif dekat.  
+        Namun, terdapat sekitar 28.065 pelanggan yang tergolong tidak aktif, yang berpotensi mengalami churn dan perlu ditargetkan untuk re-engagement.
+        """)
+    
+    with col3:
+        st.markdown("""
+        **Distribusi Skor Ulasan**:
+    
+        Mayoritas pelanggan (65.145 pelanggan) memberikan rating "puas" (5 bintang), menunjukkan bahwa layanan atau produk secara keseluruhan mendapatkan ulasan positif.  
+        Namun, 16.704 pelanggan merasa tidak puas, yang merupakan jumlah signifikan dan perlu dianalisis lebih lanjut untuk mengetahui penyebab utama ketidakpuasan mereka.
+        """)
