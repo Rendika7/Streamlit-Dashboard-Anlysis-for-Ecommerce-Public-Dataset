@@ -16,7 +16,7 @@ import base64
 
 
 # Loading Image using PIL
-web_icon = Image.open('image/Gojo Chibi.jpg') # Adding Image to web app
+web_icon = Image.open('dashboard/image/Gojo Chibi.jpg') # Adding Image to web app
 st.set_page_config(page_title="Air Quality Dashboard", layout="wide", initial_sidebar_state="auto", page_icon = web_icon)
 
 # hide_default_format = """
@@ -98,7 +98,7 @@ with st.sidebar:
 
     # Jika switch diaktifkan, jalankan musik dari file lokal dengan HTML (autoplay & loop)
     if play_music:
-        music_file = "audio/Background-lofi-by-pixabay.mp3"  # Ganti dengan file lokal kamu
+        music_file = "dashboard/audio/Background-lofi-by-pixabay.mp3"  # Ganti dengan file lokal kamu
 
         # Konversi file audio ke base64
         with open(music_file, "rb") as audio_file:
@@ -116,7 +116,7 @@ with st.sidebar:
 # ======================================== Sidebar Configuration ========================================
 
 # Menampilkan banner gambar sebagai hero image  ========================================
-st.image('image\Dashboard Analysis for E-Commerce Public Dataset.png', use_container_width=True)
+st.image('dashboard/image/Dashboard Analysis for E-Commerce Public Dataset.png', use_container_width=True)
 
 # Membuat DataFrame untuk menampilkan tabel
 data_diri = pd.DataFrame({
@@ -130,7 +130,7 @@ st.table(data_diri)
 # -------------------------------------- Load Data !!! -------------------------------------- #
 
 # Folder path
-dataPath = "main_data.csv"
+dataPath = "dashboard/main_data.csv"
 
 @st.cache_data
 def load_data():
@@ -745,29 +745,29 @@ with tab5:
     plt.tight_layout()
     st.pyplot(fig)
     
-# Plot untuk 'recency_percentile_group'
-col1, col2, col3 = st.columns([1, 1, 1])  # Membagi kolom menjadi 3
-
-with col1:
-    st.markdown("""
-    **Distribusi Pengeluaran**:
-
-    Mayoritas pelanggan berada dalam kategori pengeluaran menengah (56.600 pelanggan), menunjukkan bahwa sebagian besar pelanggan tidak berbelanja dalam jumlah kecil atau sangat besar.  
-    Segmen pelanggan dengan pengeluaran rendah (28.300 pelanggan) dan tinggi (28.293 pelanggan) relatif seimbang, yang menunjukkan adanya dua kelompok pelanggan yang mungkin membutuhkan pendekatan strategi yang berbeda.
-    """)
-
-with col2:
-    st.markdown("""
-    **Distribusi Recency (Kapan Terakhir Bertransaksi)**:
-
-    Pelanggan rutin (56.586 pelanggan) mendominasi, yang menunjukkan bahwa mayoritas pelanggan masih aktif melakukan transaksi dalam periode waktu yang relatif dekat.  
-    Namun, terdapat sekitar 28.065 pelanggan yang tergolong tidak aktif, yang berpotensi mengalami churn dan perlu ditargetkan untuk re-engagement.
-    """)
-
-with col3:
-    st.markdown("""
-    **Distribusi Skor Ulasan**:
-
-    Mayoritas pelanggan (65.145 pelanggan) memberikan rating "puas" (5 bintang), menunjukkan bahwa layanan atau produk secara keseluruhan mendapatkan ulasan positif.  
-    Namun, 16.704 pelanggan merasa tidak puas, yang merupakan jumlah signifikan dan perlu dianalisis lebih lanjut untuk mengetahui penyebab utama ketidakpuasan mereka.
-    """)
+    # Plot untuk 'recency_percentile_group'
+    col1, col2, col3 = st.columns([1, 1, 1])  # Membagi kolom menjadi 3
+    
+    with col1:
+        st.markdown("""
+        **Distribusi Pengeluaran**:
+    
+        Mayoritas pelanggan berada dalam kategori pengeluaran menengah (56.600 pelanggan), menunjukkan bahwa sebagian besar pelanggan tidak berbelanja dalam jumlah kecil atau sangat besar.  
+        Segmen pelanggan dengan pengeluaran rendah (28.300 pelanggan) dan tinggi (28.293 pelanggan) relatif seimbang, yang menunjukkan adanya dua kelompok pelanggan yang mungkin membutuhkan pendekatan strategi yang berbeda.
+        """)
+    
+    with col2:
+        st.markdown("""
+        **Distribusi Recency (Kapan Terakhir Bertransaksi)**:
+    
+        Pelanggan rutin (56.586 pelanggan) mendominasi, yang menunjukkan bahwa mayoritas pelanggan masih aktif melakukan transaksi dalam periode waktu yang relatif dekat.  
+        Namun, terdapat sekitar 28.065 pelanggan yang tergolong tidak aktif, yang berpotensi mengalami churn dan perlu ditargetkan untuk re-engagement.
+        """)
+    
+    with col3:
+        st.markdown("""
+        **Distribusi Skor Ulasan**:
+    
+        Mayoritas pelanggan (65.145 pelanggan) memberikan rating "puas" (5 bintang), menunjukkan bahwa layanan atau produk secara keseluruhan mendapatkan ulasan positif.  
+        Namun, 16.704 pelanggan merasa tidak puas, yang merupakan jumlah signifikan dan perlu dianalisis lebih lanjut untuk mengetahui penyebab utama ketidakpuasan mereka.
+        """)
