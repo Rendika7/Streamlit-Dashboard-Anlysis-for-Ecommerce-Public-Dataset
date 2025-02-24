@@ -130,7 +130,7 @@ st.table(data_diri)
 # -------------------------------------- Load Data !!! -------------------------------------- #
 
 # Folder path
-dataPath = "main_data.csv"
+dataPath = "dashboard/main_data.csv"
 
 @st.cache_data
 def load_data():
